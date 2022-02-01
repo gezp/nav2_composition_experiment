@@ -1,7 +1,5 @@
 # nav2_composition_experiment
 
-# nav2_composition_experiment
-
 test composition performance for [navigation2](https://github.com/ros-planning/navigation2).
 
 ## Quick Start
@@ -17,18 +15,19 @@ Install dependencies
 pip install psutil
 ```
 
-Run Gazebo simulator in computer
+Run test server (`Gazebo simulator`, `nav2_simple_commander` ) in computer
 
 ```bash
 # cd nav2_composition_experiment/scripts
-python tb3_simulator_server.py 
+python test_server.py 
 ```
-Run navigation2 and metric programs in another separate computer
+Run test client (`navigation2 system`) in another separate computer
 ```bash
 # cd nav2_composition_experiment/scripts
-python test.py <gazebo-host-ip>
+python test_client.py <server-host-ip>
 ```
 * these two computers should be in a same LAN.
+* test client communicate with test server by using UDP socket.
 
 ## Experiments
 
@@ -39,15 +38,22 @@ Software Info
 
 Test cases:
 
-* bring up navigation2 with normal non-composed, dynamic composition with different container, manual composition.
-* navigate from point A to point B by using `nav2_simple_commander` : `[-2, -0.5, 0.0]` ->`[1.4, -1.6, 0.0]`
+bring up navigation2 system with different way：
 
-Test metrics
+* normal non-composed. 
+* dynamic composition with different container :  `component_container_mt`  (from `rclcpp_components`)，`component_container_isolated` (from `rclcpp_components`), `component_container_isolated2` (from current package `nav2_composition_experiment`）
+* manual composition (from current package `nav2_composition_experiment`）.
+
+> Tip：`component_container_isolated2` uses `spin()` instead of `spin_until_future_complete()` in `component_container_isolated`.
+
+then, navigate from point A to point B by using `nav2_simple_commander` : `[-2, -0.5, 0.0]` ->`[1.4, -1.6, 0.0]`
+
+Test metrics:
 
 * time: navigation time (from publishing goal to reaching goal).
 * cpu : sum of every process CPU percentage.
 * memory:  sum of every process memory percentage (rss).
-* rss, pss, vms : sum of every process memory info (refer to [psutil](https://psutil.readthedocs.io/en/latest/#psutil.Process.memory_full_info)).
+* rss, pss, uss : sum of every process memory info (refer to [psutil](https://psutil.readthedocs.io/en/latest/#psutil.Process.memory_full_info)).
 
 > `memory/rss`  is overestimation for multi process system due to shared library.
 
@@ -55,25 +61,25 @@ Test metrics
 
 Hardware and OS Info
 
-* Gazebo Simulator Environment:  Laptop
+* Test Server Environment:  Laptop
   * CPU: Intel(R) Core(TM) i5-8300H CPU @ 2.30GHz (8 core)
   * RAM: 16GB RAM
   * OS: Ubuntu 18.04 Desktop (x86_64).
-* Navigation2 Environment: Raspberry 4B
+* Test Client Environment: Raspberry 4B
   * CPU: ARM Cortex-A72 @ 1.50GHz (4 core)
   * RAM: 2GB RAM
   * OS: Ubuntu 20.04 Server (aarch64).
 
 Each case repeats 5 times, mean and population standard deviation of each metrics show: 
 
-| case                                                   | time (s)       | cpu (%)         | memory (%)     | rss (MB)        | pss (MB)        | vms (MB)          |
-| ------------------------------------------------------ | -------------- | --------------- | -------------- | --------------- | --------------- | ----------------- |
-| normal non-composed                                    | 17.7000±0.2944 | 149.4944±0.6945 | 12.1783±0.0256 | 225.0761±0.4738 | 117.0557±0.2767 | 7812.8816±28.8304 |
-| dynamic composition  with component_container_isolated | 17.6073±0.3542 | 119.5300±1.2714 | 4.3546±0.0302  | 80.4801±0.5586  | 77.9121±0.4675  | 2421.0454±0.1438  |
-| dynamic composition  with component_container_mt       | 17.6798±0.1225 | 142.2383±6.5773 | 4.2422±0.0131  | 78.4035±0.2417  | 74.8609±0.2052  | 2365.6924±2.1683  |
-| manual composition                                     | 17.7566±0.2630 | 102.9381±1.2838 | 4.2783±0.0404  | 79.0696±0.7458  | 76.5826±0.4608  | 2419.3515±0.0607  |
+| case                                                    | time(s)        | cpu(%)          | memory(%)      | rss(MB)         | pss(MB)         | uss(MB)         |
+| ------------------------------------------------------- | -------------- | --------------- | -------------- | --------------- | --------------- | --------------- |
+| normal                                                  | 17.9995±0.0297 | 154.5693±4.3300 | 12.1529±0.0134 | 224.6066±0.2482 | 116.2888±0.2616 | 101.0638±0.2317 |
+| dynamic composition with  component_container_isolated  | 18.0296±0.0098 | 125.0175±4.6471 | 4.3974±0.0120  | 81.2709±0.2212  | 78.1058±0.0929  | 76.2697±0.1015  |
+| dynamic composition with  component_container_isolated2 | 18.0335±0.0040 | 108.9113±2.8575 | 4.3704±0.0068  | 80.7735±0.1258  | 78.0515±0.1732  | 76.1973±0.1997  |
+| dynamic composition with  component_container_mt        | 18.0111±0.0082 | 145.3000±7.9405 | 4.2420±0.0201  | 78.3999±0.3706  | 74.9570±0.3226  | 73.1115±0.3322  |
+| manual composition                                      | 18.0219±0.0070 | 110.9000±1.4405 | 4.2655±0.0054  | 78.8340±0.1001  | 76.8103±0.1392  | 74.6381±0.1479  |
 
-* dynamic composition composition with component_container_isolated (**default composition in Nav2**) saves 20.04% CPU and 33.44% memory (**pss**) over normal non-composed.
-
-* manual composition performs best in cpu utilization, it saves 31.14% CPU and 34.57% memory (**pss**) over normal non-composed.
+* **dynamic composition with component_container_isolated** (**default composition in Nav2**) saves 19.11% CPU and 32.83% memory (**pss**) over normal non-composed.
+* **dynamic composition with component_container_isolated2** acquires similar result as **manual composition**, it saves 29.53% CPU and 32.88% memory (**pss**) over normal non-composed. 
 

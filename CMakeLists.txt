@@ -3,6 +3,7 @@ project(nav2_composition_experiment)
 
 find_package(ament_cmake REQUIRED)
 find_package(navigation2 REQUIRED)
+find_package(rclcpp_components REQUIRED)
 find_package(nav2_map_server REQUIRED)
 find_package(nav2_amcl REQUIRED)
 find_package(nav2_controller REQUIRED)
@@ -13,8 +14,7 @@ find_package(nav2_bt_navigator REQUIRED)
 find_package(nav2_waypoint_follower REQUIRED)
 find_package(nav2_lifecycle_manager REQUIRED)
 
-set(executable_name composed_bringup)
-add_executable(${executable_name}
+add_executable(composed_bringup
   src/composed_bringup.cpp
 )
 
@@ -30,11 +30,19 @@ set(dependencies
   nav2_lifecycle_manager
 )
 
-ament_target_dependencies(${executable_name}
+ament_target_dependencies(composed_bringup
   ${dependencies}
 )
 
-install(TARGETS ${executable_name}
+add_executable(
+  component_container_isolated2
+  src/component_container_isolated2.cpp
+)
+ament_target_dependencies(component_container_isolated2
+  rclcpp_components
+)
+
+install(TARGETS composed_bringup component_container_isolated2
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 

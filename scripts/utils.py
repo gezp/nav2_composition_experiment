@@ -32,7 +32,8 @@ def get_nav2_processes():
     localization_nodes = ['map_server', 'amcl']
     navigation_nodes = ['controller_server', 'smoother_server', 'planner_server',
         'recoveries_server', 'bt_navigator', 'waypoint_follower']
-    composed_nodes = ['composed_bringup', 'component_container_mt', 'component_container_isolated']
+    composed_nodes = ['composed_bringup', 'component_container_mt', 
+        'component_container_isolated', 'component_container_isolated2']
     process_names = localization_nodes + navigation_nodes + ['lifecycle_manager'] + composed_nodes
     node_processes = []
     for name in process_names:
@@ -49,12 +50,17 @@ def launch_navigation(launch_params):
                        params={'use_composition':False})
     elif composition_type == 'dynamic':
         container_type = launch_params['container_type']
-        if container_type not in ['component_container_isolated', 'component_container_mt']:
+        if container_type in ['component_container_isolated', 'component_container_mt']:
+            run_launch_cmd(launch_file='bringup.launch.py',
+                           params={'use_composition':True, 
+                                   'container_type':container_type})
+        elif container_type in ['component_container_isolated2']:
+            run_launch_cmd(launch_file='bringup2.launch.py',
+                           params={'use_composition':True, 
+                                   'container_type':container_type})
+        else:
             print('invalid container_type:', container_type)
             raise RuntimeError('Failed to launch navigation')  
-        run_launch_cmd(launch_file='bringup.launch.py',
-                       params={'use_composition':True, 
-                               'container_type':container_type})
     elif composition_type == 'manual':
         run_launch_cmd(launch_file='composed_bringup.launch.py')
 
@@ -62,29 +68,3 @@ def kill_navigation():
     node_processes = get_nav2_processes()
     for p in node_processes:
         p.kill()
-
-def tb3_simulator_server(port = 9999):
-    BUFSIZE = 1024
-    server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # udp协议
-    server.bind(('0.0.0.0', port))
-    while True:
-        try:
-            data,client_addr = server.recvfrom(BUFSIZE)
-            if data == b'start':
-                print('start')
-                run_launch_cmd(launch_file='tb3_simulator.launch.py')
-            elif data == b'stop':
-                print('stop')
-                kill_simulator()
-            else:
-                print('invalid cmd')
-        except:
-            break
-    server.close()
-    print('exit')
-    kill_simulator()
-
-def tb3_simulator_client_request(cmd, ip = '127.0.0.1', port = 9999):
-    BUFSIZE = 1024
-    client = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-    client.sendto(cmd.encode('utf-8'), (ip, port))
