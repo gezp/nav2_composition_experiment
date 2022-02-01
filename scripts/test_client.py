@@ -94,7 +94,7 @@ def test_once(ip, launch_params):
 def main():
     # init
     ip = '127.0.0.1'
-    repeat_time = 5
+    repeat_time = 10
     if len(sys.argv) == 2:
         ip = sys.argv[1]
     time.sleep(1)
