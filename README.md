@@ -94,7 +94,7 @@ Hardware and OS Info
   * Docker version: 20.10.1
 * Test Server and Client run in different docker container at the same host machine
 
-Each case repeats 5 times, mean and population standard deviation of each metrics show: 
+Each case repeats 10 times, mean and population standard deviation of each metrics show: 
 
 | case                                                    | time(s)        | cpu(%)         | memory(%)     | rss(MB)         | pss(MB)         | uss(MB)         |
 | ------------------------------------------------------- | -------------- | -------------- | ------------- | --------------- | --------------- | --------------- |
