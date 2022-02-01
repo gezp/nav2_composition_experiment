@@ -57,7 +57,7 @@ Test metrics:
 
 > `memory/rss`  is overestimation for multi process system due to shared library.
 
-### The Result of  ARM experiment
+### The result of ARM experiment
 
 Hardware and OS Info
 
@@ -70,16 +70,40 @@ Hardware and OS Info
   * RAM: 2GB RAM
   * OS: Ubuntu 20.04 Server (aarch64).
 
-Each case repeats 5 times, mean and population standard deviation of each metrics show: 
+Each case repeats 10 times, mean and population standard deviation of each metrics show: 
 
 | case                                                    | time(s)        | cpu(%)          | memory(%)      | rss(MB)         | pss(MB)         | uss(MB)         |
 | ------------------------------------------------------- | -------------- | --------------- | -------------- | --------------- | --------------- | --------------- |
-| normal                                                  | 17.9995±0.0297 | 154.5693±4.3300 | 12.1529±0.0134 | 224.6066±0.2482 | 116.2888±0.2616 | 101.0638±0.2317 |
-| dynamic composition with  component_container_isolated  | 18.0296±0.0098 | 125.0175±4.6471 | 4.3974±0.0120  | 81.2709±0.2212  | 78.1058±0.0929  | 76.2697±0.1015  |
-| dynamic composition with  component_container_isolated2 | 18.0335±0.0040 | 108.9113±2.8575 | 4.3704±0.0068  | 80.7735±0.1258  | 78.0515±0.1732  | 76.1973±0.1997  |
-| dynamic composition with  component_container_mt        | 18.0111±0.0082 | 145.3000±7.9405 | 4.2420±0.0201  | 78.3999±0.3706  | 74.9570±0.3226  | 73.1115±0.3322  |
-| manual composition                                      | 18.0219±0.0070 | 110.9000±1.4405 | 4.2655±0.0054  | 78.8340±0.1001  | 76.8103±0.1392  | 74.6381±0.1479  |
+| normal                                                  | 17.8796±0.3799 | 154.2745±3.9111 | 12.1217±0.0337 | 224.0308±0.6225 | 116.6360±0.4050 | 101.1552±0.5018 |
+| dynamic composition with  component_container_isolated  | 18.0251±0.0078 | 121.0781±3.6180 | 4.3825±0.0168  | 80.9956±0.3109  | 78.6358±0.1525  | 76.2538±0.1509  |
+| dynamic composition with  component_container_isolated2 | 18.0294±0.0066 | 109.6206±2.4342 | 4.3822±0.0203  | 80.9900±0.3755  | 78.6317±0.1787  | 76.2604±0.1830  |
+| dynamic composition with  component_container_mt        | 17.9053±0.3374 | 140.3295±7.0591 | 4.2451±0.0404  | 78.4565±0.7459  | 75.5215±0.7145  | 73.1378±0.7127  |
+| manual composition                                      | 17.9095±0.3093 | 110.5054±2.8760 | 4.2515±0.0299  | 78.5757±0.5518  | 77.8480±0.4771  | 76.5393±0.4753  |
 
-* **dynamic composition with component_container_isolated** (**default composition in Nav2**) saves 19.11% CPU and 32.83% memory (**pss**) over normal non-composed.
-* **dynamic composition with component_container_isolated2** acquires similar result as **manual composition**, it saves 29.53% CPU and 32.88% memory (**pss**) over normal non-composed. 
+* **dynamic composition with component_container_isolated** (**default composition in Nav2**) saves 21.51% CPU and 32.58% memory (**pss**) over normal non-composed.
+* **dynamic composition with component_container_isolated2** acquires similar result as **manual composition**, it saves 28.94% CPU and 32.58% memory (**pss**) over normal non-composed. 
+
+### The result of X86_64 experiment
+
+Hardware and OS Info
+
+* Test Environment:  Laptop
+  * CPU: Intel(R) Core(TM) i5-8300H CPU @ 2.30GHz (8 core)
+  * RAM: 16GB RAM
+  * OS: Ubuntu 18.04 Desktop (x86_64).
+  * Docker version: 20.10.1
+* Test Server and Client run in different docker container at the same host machine
+
+Each case repeats 5 times, mean and population standard deviation of each metrics show: 
+
+| case                                                    | time(s)        | cpu(%)         | memory(%)     | rss(MB)         | pss(MB)         | uss(MB)         |
+| ------------------------------------------------------- | -------------- | -------------- | ------------- | --------------- | --------------- | --------------- |
+| normal                                                  | 18.7317±0.5486 | 48.6068±3.1570 | 1.5226±0.0043 | 242.0994±0.6818 | 118.8527±0.3602 | 102.0541±0.3527 |
+| dynamic composition with  component_container_isolated  | 18.9435±0.0219 | 40.1647±4.8537 | 0.4469±0.0022 | 71.0585±0.3446  | 67.7321±0.1906  | 64.7954±0.1925  |
+| dynamic composition with  component_container_isolated2 | 19.0534±0.3355 | 36.0938±4.0020 | 0.4490±0.0022 | 71.3879±0.3457  | 67.6770±0.1495  | 64.7348±0.1490  |
+| dynamic composition with  component_container_mt        | 18.8268±0.3348 | 46.2794±2.8031 | 0.4417±0.0023 | 70.2375±0.3704  | 66.7185±0.2717  | 63.7811±0.2647  |
+| manual composition                                      | 18.7109±0.4431 | 36.6018±4.2282 | 0.4309±0.0018 | 68.5248±0.2807  | 67.1393±0.1842  | 65.3641±0.1790  |
+
+* **dynamic composition with component_container_isolated** (**default composition in Nav2**) saves 17.36% CPU and 43.01% memory (**pss**) over normal non-composed.
+* **dynamic composition with component_container_isolated2** acquires similar result as **manual composition**, it saves 25.74% CPU and 43.05% memory (**pss**) over normal non-composed. 
 
