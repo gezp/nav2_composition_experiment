@@ -1,0 +1,6 @@
+case,start time(s),cancel delay(s)
+normal,0.0316±0.0025,0.0387±0.0018
+dynamic composition with component_container_isolated,0.0311±0.0056,0.0371±0.0048
+dynamic composition with component_container_isolated2,0.0301±0.0035,0.0373±0.0034
+dynamic composition with component_container_mt,0.0320±0.0042,0.0358±0.0051
+manual composition,0.0290±0.0015,0.0382±0.0025
